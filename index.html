@@ -4,22 +4,57 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>ZA-ZEN 補助アプリ</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&family=Yuji+Syuku&display=swap" rel="stylesheet">
+
     <style>
         /* =========================================
-           ▼▼▼ 素材差し替えエリア（画像） ▼▼▼
+           ▼▼▼ 素材差し替えエリア（画像・フォント） ▼▼▼
         ========================================= */
-        
-        /* 1. 背景画像 */
-        #app-container {
-            /* background-image: url('img/bg_temple.jpg'); */
-            background-size: cover; background-position: center;
-        }
-        #screen-judge {
-            /* background-image: url('img/bg_judge_wall.jpg'); */
-            background-size: cover; background-position: center;
+        :root {
+            /* 1. 大きく表示する演出用のフォント（筆文字風） */
+            --font-display: 'Yuji Syuku', serif;
+            
+            /* 2. プレーンテキスト用のフォント（UI・作法用ゴシック体） */
+            --font-plain: 'Noto Sans JP', sans-serif;
+            
+            /* --- 色の定義 --- */
+            --bg-base: #f4f1ea; --bg-panel: rgba(255, 255, 255, 0.7); 
+            --text-main: #333333; --text-sub: #666666; 
+            --accent-color: #c94f4f; --border-color: #d1cae1; 
         }
 
-        /* 2. 瞑想箱 */
+        /* 3. 背景画像 */
+        /* アプリ全体のベース（タイトル画面などはここ） */
+        #app-container {
+            background-image: url('img/bg_temple.png');
+            background-color: var(--bg-base); /* 画像がない時の予備色 */
+            background-size: cover; 
+            background-position: center;
+        }
+
+        /* 修行画面（入山後）専用の背景：山寺の床 */
+        #screen-shugyo {
+            background-image: url('img/bg_floor.png'); /* ←ここに床の画像を指定 */
+            background-size: cover;
+            background-position: center;
+            /* 画面遷移のアニメーション用（既存の設定） */
+            transition: transform 0.8s cubic-bezier(0.65, 0, 0.35, 1);
+        }
+
+        /* 審査画面（住職の前）専用の背景 */
+        #screen-judge {
+            background-image: url('img/bg_judge_wall.png'); */
+            background-color: #6d6358;
+            background-size: cover;
+            background-position: center;
+            /* 画面遷移のアニメーション用（既存の設定） */
+            transition: transform 0.8s cubic-bezier(0.65, 0, 0.35, 1);
+        }
+
+        /* 4. 瞑想箱 */
         #box-lid {
             /* background-image: url('img/box_lid.png'); */
             background-size: contain; background-repeat: no-repeat; background-position: center;
@@ -29,7 +64,7 @@
             background-size: contain; background-repeat: no-repeat; background-position: center;
         }
 
-        /* 3. 煩悩チップ（画像を設定したら、color: transparent; のコメントを外して文字を消してください） */
+        /* 5. 煩悩チップ */
         .chip { background-size: contain; background-repeat: no-repeat; background-position: center; }
         .chip.face-hidden {
             /* background-image: url('img/chip_hidden.png'); */
@@ -52,19 +87,49 @@
             background-color: #e4e4fc; /* 仮背景 */
         }
 
+	/* 6. タイトルロゴ（画像を設定したら、h1 の color: transparent; を有効にしてください） */
+        #sanmon-title-area {
+            background-image: url('img/title_logo.png');
+            background-size: contain; /* 画像を枠内に収める */
+            background-repeat: no-repeat;
+            background-position: center;
+            
+            /* ▼ ロゴの表示サイズに合わせて調整してください ▼ */
+            width: 80%;         /* 画面幅の80% */
+            max-width: 600px;   /* 最大でも600pxまで */
+            height: 150px;      /* ロゴの高さ（適宜調整） */
+            margin-bottom: 20px; /* ダイヤルとの間隔 */
+        }
+        
+        #sanmon-title-area h1 {
+            /* 画像を表示する場合、仮のテキストを透明にして消す */
+            color: transparent;
+            
+            /* 演出用フォントの設定（画像が無い場合の予備として残す） */
+            font-family: var(--font-display); font-size: 3rem; font-weight: normal; letter-spacing: 0.3em;
+        }
         /* =========================================
            ▲▲▲ 素材差し替えエリアここまで ▲▲▲
         ========================================= */
 
-        /* --- Base Variables & Reset --- */
-        :root {
-            --bg-base: #f4f1ea; --bg-panel: rgba(255, 255, 255, 0.7); 
-            --text-main: #333333; --text-sub: #666666; 
-            --accent-color: #c94f4f; --border-color: #d1cae1; 
-        }
-
+        /* --- Base Reset --- */
         * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-touch-callout: none; }
-        body { font-family: 'Hiragino Mincho ProN', 'Serif', 'Helvetica Neue', Arial, sans-serif; background-color: #e0ddd5; color: var(--text-main); width: 100vw; height: 100vh; overflow: hidden; display: flex; justify-content: center; align-items: center; }
+        
+        body {
+    	font-family: var(--font-plain); 
+    	background-color: #e0ddd5; 
+    	color: var(--text-main); 
+    	width: 100vw; 
+    
+    	/* ▼ ここを修正 ▼ */
+    	height: 100vh;  /* 古いブラウザ用の予備 */
+    	height: 100dvh; /* ★ 実際の表示領域にピタッと合わせる魔法の単位 */
+    	/* ▲ ここまで ▲ */
+    
+    	overflow: hidden; 
+    	display: flex; justify-content: center; align-items: center; 
+	}
+        
         #app-container { position: relative; width: 100%; height: 100%; max-width: 960px; background-color: var(--bg-base); overflow: hidden; box-shadow: 0 0 20px rgba(0,0,0,0.2); }
 
         /* --- Animations --- */
@@ -78,26 +143,26 @@
         /* --- Screens --- */
         .screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; opacity: 0; pointer-events: none; transition: opacity 0.6s ease-out; z-index: 10; }
         .screen.active { opacity: 1; pointer-events: auto; z-index: 20; }
-        .btn { background-color: var(--bg-panel); color: var(--text-main); border: 1px solid var(--border-color); padding: 12px 24px; font-size: 1rem; font-family: 'Hiragino Kaku Gothic ProN', sans-serif; font-weight: bold; border-radius: 4px; cursor: pointer; transition: all 0.3s; box-shadow: 0 2px 5px rgba(0,0,0,0.05); display: flex; justify-content: center; align-items: center; }
+        .btn { font-family: var(--font-plain); background-color: var(--bg-panel); color: var(--text-main); border: 1px solid var(--border-color); padding: 12px 24px; font-size: 1rem; font-weight: bold; border-radius: 4px; cursor: pointer; transition: all 0.3s; box-shadow: 0 2px 5px rgba(0,0,0,0.05); display: flex; justify-content: center; align-items: center; }
         .btn:active { background-color: #fff; border-color: var(--accent-color); color: var(--accent-color); transform: translateY(1px); }
 
         /* --- Sanmon (Title) --- */
         #screen-sanmon { justify-content: center; align-items: center; gap: 40px; padding: 20px; }
         #sanmon-title-area { text-align: center; padding: 20px; }
-        #sanmon-title-area h1 { font-size: 3rem; font-weight: normal; letter-spacing: 0.3em; }
-        .settings-group { display: flex; align-items: center; gap: 15px; background: var(--bg-panel); padding: 15px 25px; border-radius: 4px; border: 1px solid var(--border-color); font-family: 'Hiragino Kaku Gothic ProN', sans-serif; }
-        #gaze-time-select { font-size: 1.1rem; padding: 8px 15px; border-radius: 4px; background: #fff; color: var(--text-main); border: 1px solid var(--border-color); cursor: pointer; }
+        #sanmon-title-area h1 { font-family: var(--font-display); font-size: 3rem; font-weight: normal; letter-spacing: 0.3em; }
+        .settings-group { display: flex; align-items: center; gap: 15px; background: var(--bg-panel); padding: 15px 25px; border-radius: 4px; border: 1px solid var(--border-color); }
+        #gaze-time-select { font-family: var(--font-plain); font-size: 1.1rem; padding: 8px 15px; border-radius: 4px; background: #fff; color: var(--text-main); border: 1px solid var(--border-color); cursor: pointer; }
         .action-buttons { display: flex; gap: 25px; }
 
         /* --- Shugyo (Play) --- */
         #screen-shugyo { transition: transform 0.8s cubic-bezier(0.65, 0, 0.35, 1); }
-        #system-message { position: absolute; top: 80px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.6); color: #fff; padding: 10px 20px; border-radius: 20px; font-size: 1.1rem; font-family: 'Hiragino Kaku Gothic ProN', sans-serif; z-index: 60; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
+        #system-message { position: absolute; top: 80px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.6); color: #fff; padding: 10px 20px; border-radius: 20px; font-size: 1.1rem; z-index: 60; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
         #system-message.show { opacity: 1; }
         #shugyo-header { position: absolute; top: 20px; left: 0; width: 100%; display: flex; justify-content: center; z-index: 50; transition: opacity 0.3s; }
         #btn-judge { border-color: var(--accent-color); color: var(--accent-color); font-size: 1.1rem; padding: 10px 40px; }
         #shugyo-bottom-ui { position: absolute; bottom: 20px; left: 0; width: 100%; padding: 0 20px; display: flex; justify-content: space-between; align-items: flex-end; z-index: 50; transition: opacity 0.3s; pointer-events: none; }
         #shugyo-bottom-ui * { pointer-events: auto; }
-        #dial-container { display: flex; flex-direction: column; align-items: center; gap: 8px; font-family: 'Hiragino Kaku Gothic ProN', sans-serif; }
+        #dial-container { display: flex; flex-direction: column; align-items: center; gap: 8px; }
         #dial-label { font-size: 0.8rem; color: var(--text-sub); background: rgba(255,255,255,0.7); padding: 2px 8px; border-radius: 10px; }
         #dial-control { display: flex; align-items: center; gap: 10px; background-color: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 20px; padding: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         .dial-btn { width: 34px; height: 34px; border-radius: 50%; border: none; background-color: #fff; color: var(--text-main); font-size: 1.2rem; cursor: pointer; transition: 0.2s; display: flex; justify-content: center; align-items: center; }
@@ -105,7 +170,19 @@
         #flip-count-display { font-size: 1.5rem; font-weight: bold; color: var(--accent-color); width: 30px; text-align: center; }
 
         /* --- Meditation Box --- */
-        #meditation-box-container { position: absolute; top: 50%; left: 50%; width: 400px; height: 300px; transform: translate(-50%, -50%); transition: transform 0.8s ease-in-out; z-index: 30; }
+        #meditation-box-container { 
+    		position: absolute; 
+    		top: 50%; left: 50%; 
+    
+    		/* ▼ ここを修正（4:3の比率で、画面の高さの50%を基準にする例） ▼ */
+    		width: 60vh; 
+    		height: 45vh; 
+    		/* ▲ ここまで ▲ */
+    
+    		transform: translate(-50%, -50%); 
+    		transition: transform 0.8s ease-in-out; 
+    		z-index: 30; 
+	}
         #box-inside { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: #e0ddd5; border: 2px solid #bda; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; padding: 30px; gap: 15px; }
         .chip { width: 60px; height: 60px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 1.5rem; color: var(--text-main); border: 2px solid #ccc; box-shadow: 0 4px 6px rgba(0,0,0,0.1); cursor: pointer; transition: transform 0.3s ease, box-shadow 0.2s; transform-style: preserve-3d; perspective: 1000px; }
         .chip:active { transform: scale(0.95); }
@@ -120,25 +197,25 @@
         #app-container.judging-mode #screen-judge { transform: translateY(100%); }
         #app-container.judging-mode #screen-shugyo { transform: translateY(100%); }
         #scrolls-container { display: flex; gap: 20px; margin-bottom: 20px; }
-        .scroll { width: 80px; height: 220px; background-color: #eaddcf; border: 2px solid #4a3e30; border-top-width: 10px; border-bottom-width: 15px; display: flex; justify-content: center; align-items: center; font-size: 2rem; font-weight: bold; transform-origin: top; transform: scaleY(0); transition: transform 0.3s ease-out; box-shadow: 2px 5px 15px rgba(0,0,0,0.5); }
+        .scroll { font-family: var(--font-display); width: 80px; height: 220px; background-color: #eaddcf; border: 2px solid #4a3e30; border-top-width: 10px; border-bottom-width: 15px; display: flex; justify-content: center; align-items: center; font-size: 2rem; transform-origin: top; transform: scaleY(0); transition: transform 0.3s ease-out; box-shadow: 2px 5px 15px rgba(0,0,0,0.5); }
         .scroll.open { transform: scaleY(1); }
         #judge-result-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; background: rgba(0,0,0,0.4); z-index: 90; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
         #judge-result-overlay.show { opacity: 1; }
-        #judge-title { font-size: 5rem; font-weight: bold; color: #fff; letter-spacing: 0.2em; text-shadow: 0 0 20px rgba(0,0,0,0.8); margin-bottom: 10px; }
+        #judge-title { font-family: var(--font-display); font-size: 5rem; color: #fff; letter-spacing: 0.2em; text-shadow: 0 0 20px rgba(0,0,0,0.8); margin-bottom: 10px; }
         #judge-title.success { color: #f4d03f; }
         #judge-title.failure { color: #e74c3c; }
-        #judge-detail { font-size: 1.5rem; color: #fff; font-family: 'Hiragino Kaku Gothic ProN', sans-serif; background: rgba(0,0,0,0.7); padding: 15px 30px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.3); text-align: center; line-height: 1.5;}
+        #judge-detail { font-size: 1.5rem; color: #fff; background: rgba(0,0,0,0.7); padding: 15px 30px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.3); text-align: center; line-height: 1.5; }
 
         /* --- Saho (Rules) --- */
         #screen-saho { flex-direction: row; padding: 0; }
         .saho-nav { width: 30%; background-color: rgba(255, 255, 255, 0.5); border-right: 1px solid var(--border-color); padding: 40px 20px; display: flex; flex-direction: column; gap: 10px; }
-        .saho-nav-btn { background: transparent; color: var(--text-sub); border: none; padding: 15px 15px; text-align: left; font-size: 1rem; font-weight: bold; font-family: 'Hiragino Kaku Gothic ProN', sans-serif; cursor: pointer; transition: 0.3s; border-radius: 4px; }
+        .saho-nav-btn { background: transparent; color: var(--text-sub); border: none; padding: 15px 15px; text-align: left; font-size: 1rem; font-weight: bold; cursor: pointer; transition: 0.3s; border-radius: 4px; }
         .saho-nav-btn.active { color: var(--accent-color); background: #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         .saho-content-area { width: 70%; background-color: #fff; padding: 60px 50px; overflow-y: auto; }
         .saho-panel { display: none; animation: sahoFadeIn 0.4s ease-out; }
         .saho-panel.active { display: block; }
         details { margin-bottom: 20px; border-bottom: 1px solid #eee; }
-        summary { padding: 15px 0; font-size: 1.15rem; font-weight: bold; font-family: 'Hiragino Kaku Gothic ProN', sans-serif; color: var(--text-main); cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; }
+        summary { padding: 15px 0; font-size: 1.15rem; font-weight: bold; color: var(--text-main); cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; }
         summary::-webkit-details-marker { display: none; }
         summary::after { content: '＋'; color: var(--border-color); transition: 0.3s; }
         details[open] summary::after { content: '－'; color: var(--accent-color); transform: rotate(180deg); }
@@ -230,15 +307,13 @@
     const PAIR_TYPES = [['身','息'],['身','息'],['息','心'],['息','心'],['心','身'],['心','身']];
     let appState = { gazeTime: 3, isGazeDone: false, currentFlipCount: 1, remainingFlips: 0, isMeditationMode: false, isJudging: false, chips: [] };
 
-    // SE再生
     function playSE(seId) {
         const audio = document.getElementById(seId);
         if (audio && audio.src && audio.src !== window.location.href) {
-            audio.currentTime = 0; audio.play().catch(e => { /* 開発用：音声ファイルが無い場合は無視 */ });
+            audio.currentTime = 0; audio.play().catch(e => { /* 無視 */ });
         }
     }
 
-    // メッセージ表示
     function showMessage(text, durationMs = 0) {
         const msgEl = document.getElementById('system-message');
         msgEl.innerText = text; msgEl.classList.add('show');
@@ -270,7 +345,6 @@
         showMessage('瞑想箱をタップして「凝視の儀」を開始');
     }
 
-    // 作法画面
     function closeSaho() { switchScreen(previousScreenId); }
     function switchSahoTab(tabId) {
         document.querySelectorAll('.saho-nav-btn').forEach(btn => btn.classList.remove('active'));
@@ -289,7 +363,6 @@
             
             if (showFace) {
                 const faceStr = chip.faces[chip.currentSideIdx];
-                // クラスで画像を出し分ける（テキスト表示は仮）
                 if(faceStr === '身') { el.classList.add('face-body'); el.innerText = '身'; }
                 else if(faceStr === '息') { el.classList.add('face-breath'); el.innerText = '息'; }
                 else if(faceStr === '心') { el.classList.add('face-mind'); el.innerText = '心'; }
@@ -347,7 +420,7 @@
         } else {
             appState.remainingFlips = appState.currentFlipCount;
             showMessage(`煩悩を ${appState.remainingFlips} 回払ってください`);
-            renderChips(false); // 手番では中身を隠したまま
+            renderChips(false);
         }
     }
 
@@ -407,20 +480,21 @@
         const overlay = document.getElementById('judge-result-overlay');
         const appContainer = document.getElementById('app-container');
 
-        // ★修正ポイント：揺れアニメーションを確実にリセットして再発火させる
+        // 揺れアニメーションを確実にリセット
         appContainer.classList.remove('shake-active');
-        void appContainer.offsetWidth; // リフローを強制してアニメーションをリセット
+        void appContainer.offsetWidth; 
 
         titleEl.className = '';
+        let isSuccess = false;
 
         if (counts['身'] === 2 && counts['息'] === 2 && counts['心'] === 2) {
+            isSuccess = true;
             playSE('se-success');
             titleEl.innerText = '成功！'; titleEl.classList.add('success');
             detailEl.innerText = '完璧なバランスです。場のコインを総取りします。';
         } else {
             playSE('se-keisaku');
-            appContainer.classList.add('shake-active'); // 揺らす
-            
+            appContainer.classList.add('shake-active'); 
             const penalty = Math.max(counts['身'], counts['息'], counts['心']) - Math.min(counts['身'], counts['息'], counts['心']);
             titleEl.innerText = '警策'; titleEl.classList.add('failure');
             detailEl.innerHTML = `心の乱れが生じています。<br>徳コインを <strong style="color:#f4d03f; font-size:1.8rem;">${penalty} 枚</strong> 支払って下さい。`;
@@ -431,8 +505,17 @@
         setTimeout(() => {
             overlay.classList.remove('show');
             appContainer.classList.remove('judging-mode');
-            appContainer.classList.remove('shake-active'); // アニメーションクラスを確実に剥がす
+            appContainer.classList.remove('shake-active'); 
             appState.isJudging = false;
+
+            if (isSuccess) {
+                appState.isGazeDone = false;
+                initGameData();
+                appContainer.classList.add('gaze-mode');
+                setTimeout(() => {
+                    showMessage('チップが再配置されました。箱をタップして「凝視の儀」を開始してください', 4000);
+                }, 800); 
+            }
         }, 4000);
     }
 </script>
